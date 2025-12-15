@@ -229,7 +229,7 @@ services:
 
   gnb:
     container_name: gnb
-    image: free-ran-ue:latest
+    image: alonza0314/free-ran-ue:latest
     command: ./free-ran-ue gnb -c ./gnbcfg.yaml
     volumes:
       - ./config/gnbcfg.yaml:/free-ran-ue/gnbcfg.yaml
@@ -252,7 +252,7 @@ services:
 
   ue:
     container_name: ue
-    image: free-ran-ue:latest
+    image: alonza0314/free-ran-ue:latest
     command: ["tail", "-f", "/dev/null"]
     volumes:
       - ./config/uecfg.yaml:/free-ran-ue/uecfg.yaml

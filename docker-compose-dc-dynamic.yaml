@@ -229,7 +229,7 @@ services:
 
   gnb-master:
     container_name: gnb-master
-    image: free-ran-ue:latest
+    image: alonza0314/free-ran-ue:latest
     command: ./free-ran-ue gnb -c gnbcfg.yaml
     volumes:
       - ./config/gnbcfg-dc-dynamic-master.yaml:/free-ran-ue/gnbcfg.yaml
@@ -254,7 +254,7 @@ services:
 
   gnb-secondary:
     container_name: gnb-secondary
-    image: free-ran-ue:latest
+    image: alonza0314/free-ran-ue:latest
     command: ./free-ran-ue gnb -c gnbcfg.yaml
     volumes:
       - ./config/gnbcfg-dc-dynamic-secondary.yaml:/free-ran-ue/gnbcfg.yaml
@@ -279,7 +279,7 @@ services:
 
   ue:
     container_name: ue
-    image: free-ran-ue:latest
+    image: alonza0314/free-ran-ue:latest
     command: ["tail", "-f", "/dev/null"]
     volumes:
       - ./config/uecfg-dc-dynamic.yaml:/free-ran-ue/uecfg.yaml
@@ -298,7 +298,7 @@ services:
 
   console:
     container_name: fru-console
-    image: free-ran-ue:latest
+    image: alonza0314/free-ran-ue:latest
     command: ./free-ran-ue console -c consolecfg.yaml
     volumes:
       - ./config/fru-consolecfg.yaml:/free-ran-ue/consolecfg.yaml
