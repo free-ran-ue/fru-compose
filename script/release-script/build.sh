@@ -14,7 +14,7 @@
 LATEST_TAG="latest"
 REPO_URL="https://github.com/free-ran-ue/free-ran-ue.git"
 REPO_NAME="free-ran-ue"
-IMAGE_NAME=$REPO_NAME
+IMAGE_NAME="alonza0314/free-ran-ue"
 
 get_source_code() {
     if ! git clone $REPO_URL; then
