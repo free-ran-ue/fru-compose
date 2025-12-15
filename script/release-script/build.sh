@@ -40,12 +40,10 @@ main() {
     local image_tag=${1:-$LATEST_TAG}
 
     if ! get_source_code $image_tag; then
-        echo "Failed to get the source code"
         return 1
     fi
 
     if ! build_docker_image $image_tag; then
-        echo "Failed to build the docker image"
         return 1
     fi
 }
