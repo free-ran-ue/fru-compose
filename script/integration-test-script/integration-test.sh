@@ -12,7 +12,7 @@
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 
-DOCKER_PATH='../../docker'
+DOCKER_PATH='../../'
 BASIC_COMPOSE_FILE="${SCRIPT_DIR}/${DOCKER_PATH}/docker-compose.yaml"
 DC_STATIC_COMPOSE_FILE="${SCRIPT_DIR}/${DOCKER_PATH}/docker-compose-dc-static.yaml"
 DC_DYNAMIC_COMPOSE_FILE="${SCRIPT_DIR}/${DOCKER_PATH}/docker-compose-dc-dynamic.yaml"
