@@ -32,7 +32,13 @@ services:
         aliases:
           - n2.free5gc.org
     depends_on:
-      - nrf
+      nrf:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "nc", "-z", "-w", "1", "amf.free5gc.org", "8000"]
+      interval: 1s
+      timeout: 1s
+      retries: 30
 
   ausf:
     container_name: ausf
@@ -50,7 +56,8 @@ services:
         aliases:
           - ausf.free5gc.org
     depends_on:
-      - nrf
+      nrf:
+        condition: service_healthy
 
   chf:
     container_name: chf
@@ -69,9 +76,12 @@ services:
         aliases:
           - chf.free5gc.org
     depends_on:
-      - db
-      - nrf
-      - webconsole
+      db:
+        condition: service_started
+      nrf:
+        condition: service_healthy
+      webconsole:
+        condition: service_started
 
   nrf:
     container_name: nrf
@@ -91,6 +101,11 @@ services:
           - nrf.free5gc.org
     depends_on:
       - db
+    healthcheck:
+      test: ["CMD", "nc", "-z", "-w", "1", "nrf.free5gc.org", "8000"]
+      interval: 1s
+      timeout: 1s
+      retries: 30
 
   nssf:
     container_name: nssf
@@ -108,7 +123,8 @@ services:
         aliases:
           - nssf.free5gc.org
     depends_on:
-      - nrf
+      nrf:
+        condition: service_healthy
 
   pcf:
     container_name: pcf
@@ -126,7 +142,8 @@ services:
         aliases:
           - pcf.free5gc.org
     depends_on:
-      - nrf
+      nrf:
+        condition: service_healthy
 
   smf:
     container_name: smf
@@ -145,8 +162,10 @@ services:
         aliases:
           - smf.free5gc.org
     depends_on:
-      - nrf
-      - upf
+      nrf:
+        condition: service_healthy
+      upf:
+        condition: service_started
 
   udm:
     container_name: udm
@@ -164,8 +183,10 @@ services:
         aliases:
           - udm.free5gc.org
     depends_on:
-      - db
-      - nrf
+      db:
+        condition: service_started
+      nrf:
+        condition: service_healthy
 
   udr:
     container_name: udr
@@ -184,8 +205,10 @@ services:
         aliases:
           - udr.free5gc.org
     depends_on:
-      - db
-      - nrf
+      db:
+        condition: service_started
+      nrf:
+        condition: service_healthy
 
   upf:
     container_name: upf
@@ -224,8 +247,10 @@ services:
       - "2122:2122"
       - "2121:2121"
     depends_on:
-      - db
-      - nrf
+      db:
+        condition: service_started
+      nrf:
+        condition: service_healthy
 
   gnb-master:
     container_name: gnb-master
@@ -241,16 +266,26 @@ services:
       console-rans:
         ipv4_address: 10.0.4.3
     depends_on:
-      - amf
-      - ausf
-      - chf
-      - nrf
-      - nssf
-      - pcf
-      - smf
-      - udm
-      - udr
-      - upf
+      amf:
+        condition: service_healthy
+      ausf:
+        condition: service_started
+      chf:
+        condition: service_started
+      nrf:
+        condition: service_started
+      nssf:
+        condition: service_started
+      pcf:
+        condition: service_started
+      smf:
+        condition: service_started
+      udm:
+        condition: service_started
+      udr:
+        condition: service_started
+      upf:
+        condition: service_started
 
   gnb-secondary:
     container_name: gnb-secondary
@@ -266,16 +301,26 @@ services:
       console-rans:
         ipv4_address: 10.0.4.5
     depends_on:
-      - amf
-      - ausf
-      - chf
-      - nrf
-      - nssf
-      - pcf
-      - smf
-      - udm
-      - udr
-      - upf
+      amf:
+        condition: service_healthy
+      ausf:
+        condition: service_started
+      chf:
+        condition: service_started
+      nrf:
+        condition: service_started
+      nssf:
+        condition: service_started
+      pcf:
+        condition: service_started
+      smf:
+        condition: service_started
+      udm:
+        condition: service_started
+      udr:
+        condition: service_started
+      upf:
+        condition: service_started
 
   ue:
     container_name: ue
