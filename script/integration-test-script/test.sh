@@ -4,7 +4,7 @@
 # Script for local test of integration test
 #
 # Usage:
-#   ./test.sh [basic | dc-static | dc-dynamic | ulcl | all]
+#   ./test.sh [basic | dc-static | dc-dynamic | ulcl | ho | all]
 #
 # Description:
 #   This script is used to test the functionality of free-ran-ue.
@@ -15,7 +15,7 @@ SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 INTEGRATION_TEST_SCRIPT="${SCRIPT_DIR}/integration-test.sh"
 
 Usage() {
-    echo "Usage: $0 [basic | dc-static | dc-dynamic | ulcl | all]"
+    echo "Usage: $0 [basic | dc-static | dc-dynamic | ulcl | ho | all]"
     exit 1
 }
 
@@ -45,6 +45,12 @@ main() {
                 exit 1
             fi
         ;;
+        "ho")
+            if ! $INTEGRATION_TEST_SCRIPT ho; then
+                echo "Failed to run test ho!"
+                exit 1
+            fi
+        ;;
         "all")
             # Run test basic
             if ! $INTEGRATION_TEST_SCRIPT basic; then
@@ -67,6 +73,12 @@ main() {
             # Run test ulcl
             if ! $INTEGRATION_TEST_SCRIPT ulcl; then
                 echo "Failed to run test ulcl!"
+                exit 1
+            fi
+
+            # Run test ho
+            if ! $INTEGRATION_TEST_SCRIPT ho; then
+                echo "Failed to run test ho!"
                 exit 1
             fi
 
