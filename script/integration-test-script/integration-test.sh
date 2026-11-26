@@ -4,7 +4,7 @@
 # Script for integration test
 #
 # Usage:
-#   ./integration-test.sh [basic | dc-static | dc-dynamic | ulcl | ho]
+#   ./integration-test.sh [basic | dc-static | dc-dynamic | ulcl | handover]
 #
 # Description:
 #   This script is used to test the functionality of free-ran-ue.
@@ -31,10 +31,10 @@ FRU_CONSOLE_UE_DC_SWITCH_DATA_FILE="${SCRIPT_DIR}/fru-console-ue-dc-switch-data.
 FRU_CONSOLE_UE_HANDOVER_DATA_FILE="${SCRIPT_DIR}/fru-console-ue-handover-data.json"
 FRU_CONSOLE_UE_HANDOVER_BACK_DATA_FILE="${SCRIPT_DIR}/fru-console-ue-handover-back-data.json"
 
-TEST_POOL="basic|dc-static|dc-dynamic|ulcl|ho"
+TEST_POOL="basic|dc-static|dc-dynamic|ulcl|handover"
 
 Usage() {
-    echo "Usage: $0 [basic | dc-static | dc-dynamic | ulcl | ho]"
+    echo "Usage: $0 [basic | dc-static | dc-dynamic | ulcl | handover]"
     exit 1
 }
 
@@ -355,7 +355,7 @@ main() {
                 exit 1
             fi
         ;;
-        "ho")
+        "handover")
             if ! start_docker_compose $HO_COMPOSE_FILE; then
                 echo "Failed to start docker compose!"
                 exit 1
