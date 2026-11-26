@@ -4,7 +4,7 @@
 # Script for integration test
 #
 # Usage:
-#   ./integration-test.sh [basic | dc-static | dc-dynamic | ulcl]
+#   ./integration-test.sh [basic | dc-static | dc-dynamic | ulcl | ho]
 #
 # Description:
 #   This script is used to test the functionality of free-ran-ue.
@@ -17,6 +17,7 @@ BASIC_COMPOSE_FILE="${SCRIPT_DIR}/${DOCKER_PATH}/docker-compose.yaml"
 DC_STATIC_COMPOSE_FILE="${SCRIPT_DIR}/${DOCKER_PATH}/docker-compose-dc-static.yaml"
 DC_DYNAMIC_COMPOSE_FILE="${SCRIPT_DIR}/${DOCKER_PATH}/docker-compose-dc-dynamic.yaml"
 ULCL_COMPOSE_FILE="${SCRIPT_DIR}/${DOCKER_PATH}/docker-compose-ulcl.yaml"
+HO_COMPOSE_FILE="${SCRIPT_DIR}/${DOCKER_PATH}/docker-compose-ho.yaml"
 
 FREE5GC_CONSOLE_BASE_URL='http://127.0.0.1:5000'
 
@@ -27,11 +28,13 @@ FRU_CONSOLE_BASE_URL='http://127.0.0.1:40104'
 
 FRU_CONSOLE_LOGIN_DATA_FILE="${SCRIPT_DIR}/fru-console-login-data.json"
 FRU_CONSOLE_UE_DC_SWITCH_DATA_FILE="${SCRIPT_DIR}/fru-console-ue-dc-switch-data.json"
+FRU_CONSOLE_UE_HANDOVER_DATA_FILE="${SCRIPT_DIR}/fru-console-ue-handover-data.json"
+FRU_CONSOLE_UE_HANDOVER_BACK_DATA_FILE="${SCRIPT_DIR}/fru-console-ue-handover-back-data.json"
 
-TEST_POOL="basic|dc-static|dc-dynamic|ulcl"
+TEST_POOL="basic|dc-static|dc-dynamic|ulcl|ho"
 
 Usage() {
-    echo "Usage: $0 [basic | dc-static | dc-dynamic | ulcl]"
+    echo "Usage: $0 [basic | dc-static | dc-dynamic | ulcl | ho]"
     exit 1
 }
 
@@ -121,6 +124,22 @@ fru_console_ue_dc_switch() {
         return 0
     else
         echo "Failed to switch UE DC!"
+        return 1
+    fi
+}
+
+fru_console_ue_handover() {
+    local token=$(fru_console_login)
+    if [ -z "$token" ]; then
+        echo "Failed to get token!"
+        return 1
+    fi
+
+    if curl -s --fail -X POST $FRU_CONSOLE_BASE_URL/api/console/gnb/ue/handover -H "Content-Type: application/json" -H "Authorization: $token" -d @$1; then
+        echo "UE handover successful!"
+        return 0
+    else
+        echo "Failed to handover UE!"
         return 1
     fi
 }
@@ -332,6 +351,72 @@ main() {
             fi
 
             if ! stop_docker_compose $ULCL_COMPOSE_FILE; then
+                echo "Failed to stop docker compose!"
+                exit 1
+            fi
+        ;;
+        "ho")
+            if ! start_docker_compose $HO_COMPOSE_FILE; then
+                echo "Failed to start docker compose!"
+                exit 1
+            fi
+
+            if ! free5gc_console_subscriber_action "post"; then
+                echo "Failed to create subscriber!"
+                stop_docker_compose $HO_COMPOSE_FILE
+                exit 1
+            fi
+
+            docker exec -d ue ./free-ran-ue ue -c uecfg.yaml
+
+            sleep 3
+
+            if ! docker exec ue ping -I ueTun0 1.1.1.1 -c 5; then
+                echo "Failed to ping 1.1.1.1!"
+                free5gc_console_subscriber_action "delete"
+                stop_docker_compose $HO_COMPOSE_FILE
+                exit 1
+            fi
+
+            if ! fru_console_ue_handover $FRU_CONSOLE_UE_HANDOVER_DATA_FILE; then
+                echo "Failed to handover UE!"
+                free5gc_console_subscriber_action "delete"
+                stop_docker_compose $HO_COMPOSE_FILE
+                exit 1
+            fi
+
+            sleep 3
+
+            if ! docker exec ue ping -I ueTun0 1.1.1.1 -c 5; then
+                echo "Failed to ping 1.1.1.1!"
+                free5gc_console_subscriber_action "delete"
+                stop_docker_compose $HO_COMPOSE_FILE
+                exit 1
+            fi
+
+            if ! fru_console_ue_handover $FRU_CONSOLE_UE_HANDOVER_BACK_DATA_FILE; then
+                echo "Failed to handover UE back!"
+                free5gc_console_subscriber_action "delete"
+                stop_docker_compose $HO_COMPOSE_FILE
+                exit 1
+            fi
+
+            sleep 3
+
+            if ! docker exec ue ping -I ueTun0 1.1.1.1 -c 5; then
+                echo "Failed to ping 1.1.1.1!"
+                free5gc_console_subscriber_action "delete"
+                stop_docker_compose $HO_COMPOSE_FILE
+                exit 1
+            fi
+
+            if ! free5gc_console_subscriber_action "delete"; then
+                echo "Failed to delete subscriber!"
+                stop_docker_compose $HO_COMPOSE_FILE
+                exit 1
+            fi
+
+            if ! stop_docker_compose $HO_COMPOSE_FILE; then
                 echo "Failed to stop docker compose!"
                 exit 1
             fi

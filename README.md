@@ -8,6 +8,7 @@ In this compose repo, there are for types of compose for using:
 | 2 | Static NR-DC | [docker-compose-dc-static.yaml](docker-compose-dc-static.yaml) |
 | 3 | Dynamic NR-DC | [docker-compose-dc-dynamic.yaml](docker-compose-dc-dynamic.yaml)|
 | 4 | ULCL | [docker-compose-ulcl.yaml](docker-compose-ulcl.yaml) |
+| 5 | Xn Handover | [docker-compose-ho.yaml](docker-compose-ho.yaml) |
 
 ## How to use?
 
